@@ -16,6 +16,7 @@ runs:
           /usr/local/include/rocksdb
           /usr/local/lib/pkgconfig/rocksdb.pc
         key: rocksdb-v10.5.1-${{ runner.os }}
+        restore-keys: rocksdb-v10.5.1-
 
     - name: Install RocksDB shared
       if: steps.cache-rocksdb.outputs.cache-hit != 'true'
