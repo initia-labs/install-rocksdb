@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: initia-labs/actions-install-rocksdb@v1
+      - uses: initia-labs/install-rocksdb@v1
 ```
 
 ### Cached files
