@@ -1,0 +1,35 @@
+name: "Install RocksDB v10.5.1"
+description: "Build and install RocksDB shared library with caching"
+
+runs:
+  using: composite
+  steps:
+    - name: Cache RocksDB shared
+      id: cache-rocksdb
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/local/lib/librocksdb.so.10.5.1
+          /usr/local/lib/librocksdb.so.10.5
+          /usr/local/lib/librocksdb.so.10
+          /usr/local/lib/librocksdb.so
+          /usr/local/include/rocksdb
+          /usr/local/lib/pkgconfig/rocksdb.pc
+        key: rocksdb-v10.5.1-${{ runner.os }}
+
+    - name: Install RocksDB shared
+      if: steps.cache-rocksdb.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y build-essential cmake libgflags-dev \
+            libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev
+
+        git clone --depth=1 --branch v10.5.1 https://github.com/facebook/rocksdb.git /tmp/rocksdb
+        cd /tmp/rocksdb
+        make shared_lib -j"$(nproc)" PORTABLE=1
+        sudo make install-shared
+
+    - name: ldconfig
+      shell: bash
+      run: sudo ldconfig
