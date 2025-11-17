@@ -7,6 +7,7 @@ Builds RocksDB v10.5.1 as a shared library on Ubuntu runners and caches the resu
 - Restores a cache that stores the compiled RocksDB shared libraries, headers, and pkg-config files.
 - Installs the system dependencies required to build RocksDB when the cache is cold.
 - Clones facebook/rocksdb at tag `v10.5.1`, builds `make shared_lib` with `PORTABLE=1`, and runs `make install-shared`.
+- Syncs the cached build artifacts into `/usr/local` so compilers can find `rocksdb/c.h` and the shared objects.
 - Runs `ldconfig` to ensure the linker is aware of the new shared objects.
 
 ### Usage
@@ -22,15 +23,15 @@ jobs:
 
 ### Cached files
 
-The cache key is `rocksdb-v10.5.1-${{ runner.os }}` and it stores:
+The cache key is `rocksdb-v10.5.1-${{ runner.os }}` and it stores a copy of the installation tree at `$HOME/.rocksdb`, which the action then copies into `/usr/local`:
 
 ```plaintext
-/usr/local/lib/librocksdb.so.10.5.1
-/usr/local/lib/librocksdb.so.10.5
-/usr/local/lib/librocksdb.so.10
-/usr/local/lib/librocksdb.so
-/usr/local/include/rocksdb
-/usr/local/lib/pkgconfig/rocksdb.pc
+$HOME/.rocksdb/lib/librocksdb.so.10.5.1
+$HOME/.rocksdb/lib/librocksdb.so.10.5
+$HOME/.rocksdb/lib/librocksdb.so.10
+$HOME/.rocksdb/lib/librocksdb.so
+$HOME/.rocksdb/include/rocksdb
+$HOME/.rocksdb/lib/pkgconfig/rocksdb.pc
 ```
 
 ### Notes

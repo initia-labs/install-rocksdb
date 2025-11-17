@@ -15,6 +15,12 @@ runs:
         key: rocksdb-v10.5.1-${{ runner.os }}
         restore-keys: rocksdb-v10.5.1-
 
+    - name: Install cached artifacts into /usr/local
+      if: steps.cache-rocksdb.outputs.cache-hit == 'true'
+      shell: bash
+      run: |
+        sudo rsync -a --delete $HOME/.rocksdb/ /usr/local/
+
     - name: Install RocksDB shared
       if: steps.cache-rocksdb.outputs.cache-hit != 'true'
       shell: bash
@@ -28,6 +34,11 @@ runs:
         make shared_lib -j"$(nproc)" PORTABLE=1
         make install-shared PREFIX=$HOME/.rocksdb
 
+    - name: Copy RocksDB into /usr/local
+      shell: bash
+      run: |
+        sudo rsync -a --delete $HOME/.rocksdb/ /usr/local/
+
     - name: ldconfig
       shell: bash
-      run: echo "$HOME/.rocksdb/lib" | sudo tee /etc/ld.so.conf.d/rocksdb.conf && sudo ldconfig
+      run: sudo ldconfig
