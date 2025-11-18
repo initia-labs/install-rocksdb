@@ -18,14 +18,17 @@ runs:
         key: rocksdb-v10.5.1-${{ runner.os }}
         restore-keys: rocksdb-v10.5.1-
 
-    - name: Install RocksDB shared
-      if: steps.cache-rocksdb.outputs.cache-hit != 'true'
+    - name: Install system dependencies
       shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential cmake libgflags-dev \
             libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev
 
+    - name: Install RocksDB shared
+      if: steps.cache-rocksdb.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
         git clone --depth=1 --branch v10.5.1 https://github.com/facebook/rocksdb.git /tmp/rocksdb
         cd /tmp/rocksdb
         make shared_lib -j"$(nproc)" PORTABLE=1
