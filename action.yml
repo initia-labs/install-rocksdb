@@ -11,7 +11,7 @@ runs:
       id: cache-rocksdb
       uses: actions/cache@v3
       with:
-        path: $HOME/.rocksdb
+        path: ${{ env.HOME }}/.rocksdb
         key: rocksdb-v10.5.1-${{ runner.os }}
         restore-keys: rocksdb-v10.5.1-
 
