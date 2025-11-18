@@ -4,14 +4,17 @@ description: "Build and install RocksDB shared library with caching"
 runs:
   using: composite
   steps:
+    - name: Configure cache directory
+      shell: bash
+      run: echo "ROCKSDB_CACHE_DIR=$HOME/.rocksdb" >> "$GITHUB_ENV"
     - name: Prepare directory
       shell: bash
-      run: mkdir -p $HOME/.rocksdb
+      run: mkdir -p $ROCKSDB_CACHE_DIR
     - name: Cache RocksDB shared
       id: cache-rocksdb
       uses: actions/cache@v3
       with:
-        path: ${{ env.HOME }}/.rocksdb
+        path: ${{ env.ROCKSDB_CACHE_DIR }}
         key: rocksdb-v10.5.1-${{ runner.os }}
         restore-keys: rocksdb-v10.5.1-
 
@@ -26,12 +29,12 @@ runs:
         git clone --depth=1 --branch v10.5.1 https://github.com/facebook/rocksdb.git /tmp/rocksdb
         cd /tmp/rocksdb
         make shared_lib -j"$(nproc)" PORTABLE=1
-        make install-shared PREFIX=$HOME/.rocksdb
+        make install-shared PREFIX=$ROCKSDB_CACHE_DIR
 
     - name: Copy RocksDB into /usr/local
       shell: bash
       run: |
-        sudo rsync -a --delete $HOME/.rocksdb/ /usr/local/
+        sudo rsync -a --delete $ROCKSDB_CACHE_DIR/ /usr/local/
 
     - name: ldconfig
       shell: bash
