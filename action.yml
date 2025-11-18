@@ -15,12 +15,6 @@ runs:
         key: rocksdb-v10.5.1-${{ runner.os }}
         restore-keys: rocksdb-v10.5.1-
 
-    - name: Install cached artifacts into /usr/local
-      if: steps.cache-rocksdb.outputs.cache-hit == 'true'
-      shell: bash
-      run: |
-        sudo rsync -a --delete $HOME/.rocksdb/ /usr/local/
-
     - name: Install RocksDB shared
       if: steps.cache-rocksdb.outputs.cache-hit != 'true'
       shell: bash
